@@ -341,9 +341,11 @@
                     }
                 });
                 
-                // Tail
-                const tailOffsetX = -Math.cos(Math.atan2(dy, dx)) * 15;
-                const tailOffsetY = -Math.sin(Math.atan2(dy, dx)) * 15;
+                // Tail with much stronger visibility at low speeds
+                const speed = Math.sqrt(dx * dx + dy * dy);
+                const tailLength = Math.max(35, speed * 10); // Much longer minimum tail
+                const tailOffsetX = -Math.cos(Math.atan2(dy, dx)) * tailLength;
+                const tailOffsetY = -Math.sin(Math.atan2(dy, dx)) * tailLength;
                 
                 trail.push({x: x + tailOffsetX, y: y + tailOffsetY, age: 0});
                 
@@ -351,14 +353,14 @@
                     point.age++;
                     const existingEl = document.querySelector(`[data-trail="${index}"]`);
                     if (existingEl) {
-                        const scale = Math.max(0.2, 1 - (point.age * 0.15));
-                        const opacity = Math.max(0.1, 1 - (point.age * 0.12));
+                        const scale = Math.max(0.35, 0.75 - (point.age * 0.06)); // Half the previous scale
+                        const opacity = Math.max(0.6, 1 - (point.age * 0.05));
                         existingEl.style.transform = `scale(${scale})`;
                         existingEl.style.opacity = opacity;
                     }
                 });
                 
-                if (trail.length > 8) {
+                if (trail.length > 15) {
                     trail.shift();
                     const oldEl = document.querySelector(`[data-trail="0"]`);
                     if (oldEl) oldEl.remove();
@@ -373,7 +375,7 @@
                 tailEl.textContent = '🔥';
                 tailEl.style.left = (x + tailOffsetX) + 'px';
                 tailEl.style.top = (y + tailOffsetY) + 'px';
-                tailEl.style.transform = 'scale(1)';
+                tailEl.style.transform = 'scale(0.9)'; // Half of 1.8 = 0.9
                 tailEl.style.opacity = '1';
                 tailEl.setAttribute('data-trail', trail.length - 1);
                 document.body.appendChild(tailEl);
