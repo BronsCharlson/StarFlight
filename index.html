@@ -130,6 +130,7 @@
             let asteroids = [];
             let lasers = [];
             let audioCtx;
+            let asteroidTimer;
 
             // Audio functions
             function initAudio() {
@@ -237,10 +238,16 @@
                 for (let i = 0; i < difficulty; i++) {
                     createAsteroid();
                 }
+                
+                // Start asteroid spawning timer
+                asteroidTimer = setInterval(() => {
+                    if (gameStarted) createAsteroid();
+                }, 10000);
             };
 
             window.showStartScreen = function() {
                 gameStarted = false;
+                clearInterval(asteroidTimer);
                 document.getElementById('victory').style.display = 'none';
                 document.getElementById('startScreen').style.display = 'flex';
                 
